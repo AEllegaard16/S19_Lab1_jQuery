@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+0<!DOCTYPE html>
 <html>
 
 <head>
@@ -503,7 +503,42 @@
         </tfoot>
     </table>
 
+    <script>
+        let clickElements = [];
+        let elements = document.getElementsByTagName("tr");
+        let selectionText = document.getElementById("selection");
 
+        function rafraichirTexte(length, texte) {
+            if (length > 1) texte.innerText = length + " éléments sélectionnés";
+            else texte.innerText = length + " élément sélectionné";
+        } // seule amélioration : déclarer selectionText dans la fonction
+
+        function changeStyle(element, backgroundColor, fontWeight, border){
+            if (backgroundColor !== null) element.style.backgroundColor = backgroundColor;   
+            if (fontWeight !== null) element.style.fontWeight = fontWeight;
+            if (border !== null) element.style.border = border;
+        } // amélioration : gérer cas où bgColor et fontWeight === null (je l'ai ajouté suite à instruction #3, p.8)
+
+        for(let i = 0;i<elements.length;i++){
+            let element = elements[i];
+            element.addEventListener("click", function(event){
+                let target = this;
+                let targetIndex = clickElements.indexOf(target);
+                if(targetIndex === -1){
+                    changeStyle(target, "lightblue", "900", null);
+                    clickElements.push(target);
+                    rafraichirTexte(clickElements.length, selectionText);                    
+                }
+                else{
+                    changeStyle(target, "white", "500", null);
+                    clickElements.splice(targetIndex,1);
+                    rafraichirTexte(clickElements.length, selectionText);                  
+                }
+            });
+            element.addEventListener("mouseover", function(event) { changeStyle(element, null, null, "1px solid #888") });
+            element.addEventListener("mouseout", function(event) { changeStyle(element, null, null, "") });
+        }
+    </script>
 
 </body>
 
