@@ -2,6 +2,10 @@
 <html>
 
 <head>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/2.3.8/js/dataTables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.3.8/css/dataTables.dataTables.min.css">
+
     <style type="text/css">
         table {
             border-collapse: collapse;
@@ -504,40 +508,69 @@
     </table>
 
     <script>
-        let clickElements = [];
-        let elements = document.getElementsByTagName("tr");
-        let selectionText = document.getElementById("selection");
+        function refreshSelectionText(count){
+            if(count > 1) $("#selection").text(count+" éléments sélectionnés");
+            else $("#selection").text(count+" élément sélectionné");  
+        }       
 
-        function rafraichirTexte(length, texte) {
-            if (length > 1) texte.innerText = length + " éléments sélectionnés";
-            else texte.innerText = length + " élément sélectionné";
-        } // seule amélioration : déclarer selectionText dans la fonction
+        let table = $('table').DataTable({
+            "language": {
+                "lengthMenu": "Affichage de _MENU_ enregistrements par page",
+                "zeroRecords": "Rien trouvé… Désolé! ",
+                "info": "Affichage de la page _PAGE_ de _PAGES_",
+                "infoEmpty": "Aucun enregistrement disponible ",
+                "infoFiltered": "(filtré à partir d’un maximum de _MAX_ enregistrement)" ,
+                "search":"Recherche: "
+            }
+        });
 
-        function changeStyle(element, backgroundColor, fontWeight, border){
-            if (backgroundColor !== null) element.style.backgroundColor = backgroundColor;   
-            if (fontWeight !== null) element.style.fontWeight = fontWeight;
-            if (border !== null) element.style.border = border;
-        } // amélioration : gérer cas où bgColor et fontWeight === null (je l'ai ajouté suite à instruction #3, p.8)
+        $('table tbody').on( 'click', 'tr',  function () {
+            $(this).toggleClass('selected');
+            refreshSelectionText(table.rows('.selected').data().length);
+        } );
 
-        for(let i = 0;i<elements.length;i++){
-            let element = elements[i];
-            element.addEventListener("click", function(event){
-                let target = this;
-                let targetIndex = clickElements.indexOf(target);
-                if(targetIndex === -1){
-                    changeStyle(target, "lightblue", "900", null);
-                    clickElements.push(target);
-                    rafraichirTexte(clickElements.length, selectionText);                    
-                }
-                else{
-                    changeStyle(target, "white", "500", null);
-                    clickElements.splice(targetIndex,1);
-                    rafraichirTexte(clickElements.length, selectionText);                  
-                }
-            });
-            element.addEventListener("mouseover", function(event) { changeStyle(element, null, null, "1px solid #888") });
-            element.addEventListener("mouseout", function(event) { changeStyle(element, null, null, "") });
+
+
+        /* function refreshSelectionText(count){
+        if(count > 1)
+            $("#selection").text(count + " éléments sélectionnés");
+        else 
+            $("#selection").text(count + " élément sélectionné");        
         }
+        
+        function changeStyle(element, backgroundColor, fontWeight, border){
+            if(backgroundColor!== null){
+                $(element).css("background-color", backgroundColor);
+            }
+            if(fontWeight !== null){
+                $(element).css("font-weight", fontWeight);
+            }
+            if(border !== null){
+                $(element).css("border", border);
+            }
+        }
+
+        let clickElements = [];
+        
+        $("tr").on("click",function(){
+            let target = this;
+            let targetIndex = clickElements.indexOf(target);
+            if(targetIndex === -1){
+                changeStyle(target, "lightblue", "900", null);
+                clickElements.push(target);
+                refreshSelectionText(clickElements.length);
+            }
+            else{
+                changeStyle(target, "white", "500", null);
+                clickElements.splice(targetIndex,1);
+                refreshSelectionText(clickElements.length);
+            }
+        }).on("mouseover", function(){
+            changeStyle(this, null, null, "1px solid #888");
+        }).on("mouseout", function(){
+            changeStyle(this, null, null, "");       
+        }); */        
+
     </script>
 
 </body>
